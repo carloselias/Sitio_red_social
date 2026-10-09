@@ -313,9 +313,237 @@ const deletePerfilImage = (imagePath) => {
 
 };
 
+const getUserPerfil = async (req, res) => {
+
+    try {
+
+        const user =
+            await User.findById(
+                req.params.id
+            ).select(
+                "_id name email role description profileImage followers createdAt"
+            );
+
+
+        if (!user) {
+
+            return res.status(404).json({
+                message:
+                    "Usuario no encontrado"
+            });
+
+        }
+
+
+        const token =
+            req.headers.authorization;
+
+
+        let following = false;
+
+
+        if (
+            token &&
+            token.startsWith("Bearer ")
+        ) {
+
+            try {
+
+                const jwt =
+                    require("jsonwebtoken");
+
+                const decoded =
+                    jwt.verify(
+                        token.split(" ")[1],
+                        process.env.JWT_SECRET
+                    );
+
+
+                following =
+                    (user.followers || []).some(
+                        follower =>
+                            follower.toString() ===
+                            decoded.id
+                    );
+
+            } catch (error) {
+
+                // Token inválido:
+                // simplemente se considera que no sigue
+
+                following = false;
+
+            }
+
+        }
+
+
+        res.json({
+
+            user: {
+
+                _id: user._id,
+
+                name: user.name,
+
+                email: user.email,
+
+                role: user.role,
+
+                description:
+                    user.description,
+
+                profileImage:
+                    user.profileImage,
+
+                followersCount:
+                    user.followers?.length || 0,
+
+                following
+
+            }
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al obtener perfil:",
+            error
+        );
+
+
+        res.status(500).json({
+
+            message:
+                "Error al obtener el perfil del usuario"
+
+        });
+
+    }
+
+};
+
+const toggleFollow = async (req, res) => {
+
+    try {
+
+        const currentUserId = req.user.id;
+        const targetUserId = req.params.id;
+
+
+        // No permitir seguirse a sí mismo
+
+        if (currentUserId === targetUserId) {
+
+            return res.status(400).json({
+                message:
+                    "No puedes seguirte a ti mismo"
+            });
+
+        }
+
+
+        const targetUser =
+            await User.findById(targetUserId);
+
+        if (!targetUser) {
+
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+            });
+
+        }
+
+        if (!targetUser.followers) {
+            targetUser.followers = [];
+        }
+
+
+        // Comprobar si ya lo sigue
+
+        const alreadyFollowing =
+            targetUser.followers.some(
+                follower =>
+                    follower.toString() === currentUserId
+            );
+
+
+        if (alreadyFollowing) {
+
+            // Dejar de seguir
+
+            targetUser.followers =
+                targetUser.followers.filter(
+                    follower =>
+                        follower.toString() !== currentUserId
+                );
+
+            await targetUser.save();
+
+
+            return res.json({
+
+                message:
+                    "Has dejado de seguir al usuario",
+
+                following: false,
+
+                followersCount:
+                    targetUser.followers.length
+
+            });
+
+        }
+
+
+        // Seguir
+
+        targetUser.followers.push(
+            currentUserId
+        );
+
+        await targetUser.save();
+
+
+        res.json({
+
+            message:
+                "Ahora sigues a este usuario",
+
+            following: true,
+
+            followersCount:
+                targetUser.followers.length
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al modificar seguimiento:",
+            error
+        );
+
+
+        res.status(500).json({
+
+            message:
+                "Error al modificar el seguimiento"
+
+        });
+
+    }
+
+};
+
 module.exports = {
     registro,
     login,
     getMe,
-    updatePerfil
+    updatePerfil,
+    getUserPerfil,
+    toggleFollow
 };

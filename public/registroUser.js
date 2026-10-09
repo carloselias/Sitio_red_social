@@ -155,7 +155,7 @@ registerForm.addEventListener(
             setTimeout(() => {
 
                 window.location.href =
-                    "login.html";
+                    "iniciarSesion.html";
 
             }, 1500);
 

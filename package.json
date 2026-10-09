@@ -1,23 +1,24 @@
 {
-  "name": "repositorio_js_1",
+  "name": "sitio_red_social",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./src/app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/carloselias/Repositorio_js_1.git"
+    "url": "git+https://github.com/carloselias/Sitio_red_social.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/carloselias/Repositorio_js_1/issues"
+    "url": "https://github.com/carloselias/Sitio_red_social/issues"
   },
-  "homepage": "https://github.com/carloselias/Repositorio_js_1#readme",
+  "homepage": "https://github.com/carloselias/Sitio_red_social#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",

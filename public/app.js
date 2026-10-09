@@ -110,30 +110,34 @@ function renderPosts(posts) {
                 <h2 class="post-title">
                     ${post.title}
                 </h2>
-
+                
                 <div class="post-metadata">
-                    ${
-                        post.author?.profileImage
-                        ? 
-                        `
-                            <img
-                            src="${post.author.profileImage}"
-                            alt="${post.author.name || "Usuario"}"
-                            class="post-author-icon"
-                            >
-                        `
-                        : `
-                            <img
-                            src="/svg/default-user-icon.svg"
-                            alt="Usuario"
-                            class="post-author-icon"
-                            >
-                        `
-                    }
+                    <a href="perfilUser.html?id=${post.author?._id || ""}" class="post-author-link">
+                        ${
+                            post.author?.profileImage
+                            ?
+                            `
+                                <img
+                                    src="${post.author.profileImage}"
+                                    alt="${post.author.name || "Usuario"}"
+                                    class="post-author-icon"
+                                >
+                            `
+                            :
+                            `
+                                <img
+                                    src="/svg/default-user-icon.svg"
+                                    alt="Usuario"
+                                    class="post-author-icon"
+                                >
+                            `
+                        }
 
-                    <span class="post-author">
-                        ${post.author?.name || "Usuario"}
-                    </span>
+                        <span class="post-author">
+                            ${post.author?.name || "Usuario"}
+                        </span>
+
+                    </a>
 
                     <span class="post-date">
                         ${formatDate(post.createdAt)}
@@ -738,6 +742,11 @@ document.addEventListener(
         currentUser =
             await getCurrentUser();
 
+        if (!currentUser) {
+            window.location.replace("iniciarSesion.html");
+            return;
+        }
+
         updateUserInterface();
 
         /*
@@ -755,7 +764,9 @@ document.addEventListener(
             .querySelector("#login-button")
             .addEventListener(
                 "click",
-                openLoginModal
+                () => {
+                    window.location.href = "iniciarSesion.html";
+                }
             );
 
         /* -------------------------
@@ -783,7 +794,7 @@ document.addEventListener(
 
         document
             .querySelector("#close-login-modal")
-            .addEventListener(
+            ?.addEventListener(
                 "click",
                 closeLoginModal
             );
@@ -796,7 +807,7 @@ document.addEventListener(
 
         document
             .querySelector("#login-modal")
-            .addEventListener(
+            ?.addEventListener(
                 "click",
                 (event) => {
 
@@ -817,7 +828,7 @@ document.addEventListener(
 
         document
             .querySelector("#login-form")
-            .addEventListener(
+            ?.addEventListener(
                 "submit",
                 async (event) => {
 
@@ -857,7 +868,7 @@ document.addEventListener(
                             email,
                             password
                         );
-
+                        
                         /*
                          * Actualizar header
                          */
@@ -923,6 +934,11 @@ document.addEventListener(
                     );
 
                     currentUser = null;
+
+                    if (!currentUser) {
+                        window.location.replace("iniciarSesion.html");
+                        return;
+                    }
 
                     updateUserInterface();
 

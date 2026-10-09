@@ -38,7 +38,13 @@ const userSchema = new mongoose.Schema(
         profileImage: {
             type: String,
             default: null
-        }
+        },
+        followers: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            }
+        ],
     },
     {
         timestamps: true

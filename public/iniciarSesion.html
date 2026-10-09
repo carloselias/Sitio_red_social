@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión | HTT Social: Toda la verdad primero</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="login-modal">
+        <section class="login-modal-content" aria-labelledby="login-title">
+            <span class="blog-logo-text">HTT Social</span>
+            <div class="login-header">
+                <h1 id="login-title">Iniciar sesión</h1>
+                <p>Ingresa a tu cuenta para continuar</p>
+            </div>
+            <div class="login-icon">
+                <img src="/svg/logo.svg" alt="" aria-hidden="true" class="login-logo">
+            </div>
+            <form id="login-form">
+                <div class="login-form-group">
+                    <label for="login-email">Correo electrónico</label>
+                    <input type="email" id="login-email" name="email"
+                        placeholder="correo@ejemplo.com" autocomplete="email" required>
+                </div>
+                <div class="login-form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" name="password"
+                        placeholder="Ingresa tu contraseña"
+                        autocomplete="current-password" required>
+                </div>
+                <p id="login-message" class="login-message" aria-live="polite"></p>
+                <button type="submit" class="login-submit-button">Iniciar sesión</button>
+            </form>
+            <div class="login-footer">
+                <p>¿No tienes una cuenta?</p>
+                <a href="registroUser.html" id="register-button" class="register-button">
+                    Registrarse
+                </a>
+            </div>
+        </section>
+    </main>
+    <script>
+        const loginForm = document.querySelector("#login-form");
+        const message = document.querySelector("#login-message");
+
+        loginForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const email = document.querySelector("#login-email").value.trim();
+            const password = document.querySelector("#login-password").value;
+            message.textContent = "Iniciando sesión...";
+
+            try {
+                const response = await fetch("/api/aut/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || "Error al iniciar sesión");
+                }
+
+                localStorage.setItem("token", data.token);
+                window.location.replace("index.html");
+            } catch (error) {
+                message.textContent = error.message;
+            }
+        });
+    </script>
+</body>
+</html>

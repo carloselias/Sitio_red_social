@@ -39,6 +39,9 @@ button {
 }
 
 .blog-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     background: var(--color-surface);
     border-bottom: 1px solid var(--color-border);
 }
@@ -54,7 +57,6 @@ button {
     display: flex;
     align-items: center;
     gap: 2rem;
-    overflow: hidden;
 }
 
 .blog-logo {
@@ -68,26 +70,45 @@ button {
     font-weight: 800;
     text-decoration: none;
     white-space: nowrap;
+    
 }
 
 .blog-logo img {
+    flex: 0 0 auto;
     position: absolute;
     z-index: -1;
-    top: -15px;
+    top: -5px;
     bottom: 0;
-    left: 15px;
+    left: -80px;
     width: auto;
-    height: 150%;
+    height: 132%;
     max-width: none;
+    object-fit: cover;
     pointer-events: none;
 }
 
 .blog-logo-text {
+    min-width: 0;
     position: relative;
     z-index: 1;
-    color: var(--color-text);
+    color: var(--color-primary);
     -webkit-text-stroke: 4px var(--color-page);
     paint-order: stroke fill; 
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.blog-logo-text::after {
+    content: "Toda la verdad primero";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .main-navigation {
@@ -415,17 +436,16 @@ button {
 }
 
 .login-modal {
-    position: fixed;
-    z-index: 10;
-    inset: 0;
-    display: none;
-    place-items: center;
-    padding: 1rem;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .login-modal-content {
     position: relative;
-    width: min(100%, 420px);
+    width: 420px;
+    height: auto;
     padding: 2rem;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -468,6 +488,21 @@ button {
 .login-header p {
     margin-top: 0.35rem;
     color: var(--color-muted);
+}
+
+.login-icon {
+    width: 15rem;
+    height: 15rem;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 1.25rem;
+}
+
+.login-logo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .login-form-group {
@@ -1003,6 +1038,30 @@ button {
     background: var(--color-page);
     color: var(--color-muted);
     cursor: not-allowed;
+}
+
+.followers-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+#followers-count {
+    font-weight: 700;
+    color: var(--color-muted);
+    font-size: 2.2rem;
+}
+
+.follow-button {
+    border: 1px solid var(--color-primary);
+    border-radius: 0.5rem;
+    padding: 0.65rem 1rem;
+    background: var(--color-primary);
+    color: var(--color-surface);
+    font-weight: 700;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 button:focus-visible,

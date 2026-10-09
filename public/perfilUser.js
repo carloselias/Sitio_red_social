@@ -1,41 +1,267 @@
 const API_URL = "/api";
 
+const params = new URLSearchParams(window.location.search);
 
-const profileForm =
-    document.querySelector("#profile-form");
+const profileId = params.get("id");
 
-const nameInput =
-    document.querySelector("#profile-name");
+const profileForm = document.querySelector("#profile-form");
 
-const emailInput =
-    document.querySelector("#profile-email");
+const nameInput = document.querySelector("#profile-name");
 
-const descriptionInput =
-    document.querySelector("#profile-description");
+const emailInput = document.querySelector("#profile-email");
 
-const imageInput =
-    document.querySelector("#profile-image");
+const descriptionInput = document.querySelector("#profile-description");
 
-const profileImageContainer =
-    document.querySelector(
-        "#profile-image-container"
+const imageInput = document.querySelector("#profile-image");
+
+const profileImageContainer = document.querySelector("#profile-image-container");
+
+const profileMessage = document.querySelector("#profile-message");
+
+const headerUserName = document.querySelector("#header-user-name");
+
+const logoutButton = document.querySelector("#logout-button");
+
+const followSection = document.querySelector("#follow-section");
+
+const followButton = document.querySelector("#follow-button");
+
+const followersCount = document.querySelector("#followers-count");
+
+const saveProfileButton = document.querySelector("#save-profile-button");
+
+async function getCurrentUser() {
+
+    const token =
+        localStorage.getItem("token");
+
+    if (!token) {
+        return null;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/aut/me`,
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const data =
+            await response.json();
+
+        return data.user;
+
+    } catch (error) {
+
+        console.error(error);
+
+        return null;
+    }
+}
+
+function updateUserInterface() {
+
+    const userIcon = document.querySelector(".user-icon");
+
+    const userName = document.querySelector(".user-name");
+
+    const loginButton = document.querySelector("#login-button");
+
+    const logoutButton = document.querySelector("#logout-button");
+
+    const registerButton = document.querySelector("#register-button");
+
+    if (currentUser) {
+
+        /*
+         * Usuario autenticado
+         */
+        if (currentUser.profileImage) {
+            userIcon.src = currentUser.profileImage;
+        }
+        userName.textContent = currentUser.name;
+        loginButton.style.display = "none";
+        logoutButton.style.display = "inline-block";
+        registerButton.style.display = "none";
+        userName.style.cursor = "pointer";
+        userName.addEventListener("click", redirectToProfile);
+
+    } else {
+
+        /*
+         * Usuario no autenticado
+         */
+        userIcon.src = "/svg/default-user-icon.svg"; // Limpiar la fuente del icono del usuario
+        userName.textContent = "Invitado";
+        loginButton.style.display = "inline-block";
+        logoutButton.style.display = "none";
+        userName.style.cursor = "none";
+        userName.removeEventListener("click", redirectToProfile);
+    }
+}
+
+async function getProfile(id) {
+
+    const response =
+        await fetch(
+            `${API_URL}/aut/users/${id}`
+        );
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            "No se pudo obtener el perfil"
+        );
+
+    }
+
+
+    return data.user;
+}
+
+function enableEditMode() {
+
+    nameInput.readOnly = false;
+
+    descriptionInput.readOnly = false;
+
+    imageInput.style.display =
+        "block";
+
+    saveProfileButton.style.display =
+        "inline-block";
+
+    profileForm.classList.remove(
+        "view-only"
     );
 
-const profileMessage =
-    document.querySelector(
-        "#profile-message"
+    followSection.style.display = "none";
+}
+
+function enableViewMode() {
+    nameInput.readOnly = true;
+
+    descriptionInput.readOnly = true;
+
+    imageInput.style.display =
+        "none";
+
+    saveProfileButton.style.display =
+        "none";
+
+    profileForm.classList.add(
+        "view-only"
     );
 
-const headerUserName =
-    document.querySelector(
-        "#header-user-name"
-    );
+    followSection.style.display = "block";
+}
 
-const logoutButton =
-    document.querySelector(
-        "#logout-button"
-    );
+function updateFollowButton(following) {
 
+    if (following) {
+
+        followButton.textContent =
+            "Dejar de seguir";
+
+        followButton.classList.add(
+            "following"
+        );
+
+    } else {
+
+        followButton.textContent =
+            "Seguir";
+
+        followButton.classList.remove(
+            "following"
+        );
+
+    }
+
+}
+
+async function toggleFollow(id) {
+
+    const token =
+        localStorage.getItem("token");
+
+
+    if (!token) {
+
+        window.location.href =
+            "iniciarSesion.html";
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/aut/users/${id}/follow`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "No se pudo modificar el seguimiento"
+            );
+
+        }
+
+
+        updateFollowButton(
+            data.following
+        );
+
+
+        followersCount.textContent =
+            data.followersCount;
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
 
 // ==========================================
 // Mostrar mensaje
@@ -51,7 +277,6 @@ function showMessage(message, type) {
 
 }
 
-
 // ==========================================
 // Cargar usuario
 // ==========================================
@@ -62,98 +287,110 @@ async function loadProfile() {
         localStorage.getItem("token");
 
 
-    if (!token) {
+    let currentUser = null;
 
-        window.location.href =
-            "login.html";
+
+    if (token) {
+
+        currentUser =
+            await getCurrentUser();
+
+    }
+
+
+    let profile;
+
+
+    try {
+
+        if (profileId) {
+
+            // Estamos visitando un perfil específico
+
+            profile =
+                await getProfile(profileId);
+
+        } else {
+
+            // Estamos viendo nuestro propio perfil
+
+            if (!currentUser) {
+
+                window.location.href =
+                    "iniciarSesion.html";
+
+                return;
+
+            }
+
+            profile =
+                currentUser;
+
+        }
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message,
+            "error"
+        );
 
         return;
 
     }
 
 
-    try {
+    /*
+     * Determinar si es nuestro perfil
+     */
 
-        const response =
-            await fetch(
-                `${API_URL}/aut/me`,
-                {
-                    headers: {
-                        "Authorization":
-                            `Bearer ${token}`
-                    }
-                }
-            );
+    const isOwnProfile =
+        currentUser &&
+        currentUser._id === profile._id;
 
+    followersCount.textContent = profile.followersCount || 0;
 
-        const data =
-            await response.json();
+    /*
+     * Cargar información
+     */
 
+    nameInput.value =
+        profile.name || "";
 
-        if (!response.ok) {
+    emailInput.value =
+        profile.email || "";
 
-            localStorage.removeItem("token");
-
-            window.location.href =
-                "login.html";
-
-            return;
-
-        }
+    descriptionInput.value =
+        profile.description || "";
 
 
-        const user =
-            data.user;
+    headerUserName.textContent =
+        profile.name || "Usuario";
 
 
-        // Nombre
-
-        nameInput.value =
-            user.name || "";
-
-
-        // Correo
-
-        emailInput.value =
-            user.email || "";
+    renderProfileImage(
+        profile.profileImage
+    );
 
 
-        // Descripción
+    /*
+     * Modo edición
+     */
 
-        descriptionInput.value =
-            user.description || "";
+    if (isOwnProfile) {
 
+        enableEditMode();
 
-        // Nombre en encabezado
+    } else {
 
-        headerUserName.textContent =
-            user.name || "Usuario";
-
-
-        // Foto
-
-        renderProfileImage(
-            user.profileImage
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Error al cargar perfil:",
-            error
-        );
-
-
-        showMessage(
-            "No se pudo cargar el perfil",
-            "error"
-        );
-
+        enableViewMode();
+        updateFollowButton(profile.following);
     }
 
 }
-
 
 // ==========================================
 // Mostrar foto de perfil
@@ -187,6 +424,25 @@ function renderProfileImage(image) {
 
 }
 
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        /*
+         * Comprobar si ya existe
+         * una sesión guardada
+         */
+        currentUser =
+            await getCurrentUser();
+
+        if (!currentUser) {
+            window.location.replace("iniciarSesion.html");
+            return;
+        }
+
+        updateUserInterface();
+    }
+);
 
 // ==========================================
 // Vista previa
@@ -265,7 +521,6 @@ imageInput.addEventListener(
     }
 );
 
-
 // ==========================================
 // Guardar perfil
 // ==========================================
@@ -284,7 +539,7 @@ profileForm.addEventListener(
         if (!token) {
 
             window.location.href =
-                "login.html";
+                "iniciarSesion.html";
 
             return;
 
@@ -453,7 +708,6 @@ profileForm.addEventListener(
     }
 );
 
-
 // ==========================================
 // Cerrar sesión
 // ==========================================
@@ -472,9 +726,21 @@ logoutButton.addEventListener(
     }
 );
 
-
 // ==========================================
 // Inicializar
 // ==========================================
+
+followButton.addEventListener(
+    "click",
+    () => {
+
+        if (!profileId) {
+            return;
+        }
+
+        toggleFollow(profileId);
+
+    }
+);
 
 loadProfile();

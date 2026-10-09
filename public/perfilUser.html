@@ -22,39 +22,54 @@
 
 <body>
 
-<header class="blog-header">
+    <header class="blog-header">
 
-    <div class="header-container">
+        <div class="header-container">
 
-        <a
-            href="index.html"
-            class="blog-logo"
-        >
-            Blog 1
-        </a>
+            <a href="#" class="blog-logo">
+                <img src="/svg/logo.svg" alt="" aria-hidden="true">
+                <span class="blog-logo-text">HTT Social</span>
+            </a>
 
+            <nav class="main-navigation">
+                <a href="#" class="nav-link">Inicio</a>
+                <a href="#" class="nav-link">Mis publicaciones</a>
+                <a href="#" class="nav-link-create-post">Crear publicación</a>
+            </nav>
 
-        <div class="user-section">
+            <div class="user-section">
 
-            <span
-                class="user-name"
-                id="header-user-name"
-            >
-                Usuario
-            </span>
+                <img src="/svg/default-user-icon.svg" class="user-icon">
 
-            <button
-                id="logout-button"
-                class="logout-button"
-            >
-                Cerrar sesión
-            </button>
+                <span class="user-name">
+                    Invitado
+                </span>
+
+                <a href="registroUser.html" id="register-button" class="register-button">
+                    Registrarse
+                </a>
+
+                <button
+                    id="login-button"
+                    class="login-button"
+                >
+                    Iniciar sesión
+                </button>
+
+                <button
+                    id="logout-button"
+                    class="logout-button"
+                    style="display: none;"
+                >
+                    Cerrar sesión
+                </button>
+
+            </div>
+
 
         </div>
 
-    </div>
-
-</header>
+    </header>
 
 
 <main class="blog-main">
@@ -68,7 +83,6 @@
             </h1>
 
         </div>
-
 
         <form
             id="profile-form"
@@ -117,6 +131,7 @@
             <div class="form-group">
 
                 <label
+                    id = "header-user-name"
                     for="profile-name"
                     class="form-label"
                 >
@@ -134,6 +149,31 @@
 
             </div>
 
+            <!-- Usuarios -->
+            <div
+                id="followers-info"
+                class="followers-info"
+            >
+                <span id="followers-count">
+                    0
+                </span>
+                seguidores
+            </div>
+
+            <div
+                id="follow-section"
+                class="follow-section"
+                style="display: none;"
+            >
+
+                <button
+                    id="follow-button"
+                    class="follow-button"
+                    type="button"
+                >
+                    Seguir
+                </button>
+            </div>
 
             <!-- Correo -->
 
@@ -227,7 +267,7 @@
 <footer class="blog-footer">
 
     <p>
-        Blog 1. Blog educativo.
+        HTT Social. Red Social educativa.
     </p>
 
 </footer>

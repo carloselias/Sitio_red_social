@@ -442,21 +442,6 @@ document.addEventListener(
             }
         );
 
-
-        /* =========================
-           CANCELAR
-           ========================= */
-
-        cancelButton.addEventListener(
-            "click",
-            () => {
-
-                window.location.href =
-                    "index.html";
-            }
-        );
-
-
         /* =========================
            CERRAR SESIÓN
            ========================= */

@@ -29,42 +29,46 @@
 
         <div class="header-container">
 
-            <a
-                href="index.html"
-                class="blog-logo"
-            >
-                Blog 1
+            <a href="index.html" class="blog-logo">
+                <img src="/svg/logo.svg" alt="" aria-hidden="true">
+                <span class="blog-logo-text">HTT Social</span>
             </a>
 
             <nav class="main-navigation">
-
-                <a
-                    href="index.html"
-                    class="nav-link"
-                >
-                    Inicio
-                </a>
-
+                <a href="index.html" class="nav-link">Inicio</a>
+                <a href="#" class="nav-link">Mis publicaciones</a>
+                <a href="#" class="nav-link-create-post">Crear publicación</a>
             </nav>
 
             <div class="user-section">
 
-                <span
-                    id="user-name"
-                    class="user-name"
-                >
-                    Cargando...
+                <img src="/svg/default-user-icon.svg" class="user-icon">
+
+                <span class="user-name">
+                    Invitado
                 </span>
 
+                <a href="registroUser.html" id="register-button" class="register-button">
+                    Registrarse
+                </a>
+
                 <button
-                    type="button"
+                    id="login-button"
+                    class="login-button"
+                >
+                    Iniciar sesión
+                </button>
+
+                <button
                     id="logout-button"
                     class="logout-button"
+                    style="display: none;"
                 >
                     Cerrar sesión
                 </button>
 
             </div>
+
 
         </div>
 
@@ -218,13 +222,12 @@
 
                 <div class="create-post-actions">
 
-                    <button
-                        type="button"
-                        id="cancel-post-button"
-                        class="cancel-post-button"
+                    <a
+                    href="index.html"
+                    class="cancel-button"
                     >
                         Cancelar
-                    </button>
+                    </a>
 
                     <button
                         type="submit"
